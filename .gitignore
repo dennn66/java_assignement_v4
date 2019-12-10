@@ -21,3 +21,17 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/readme.md
+/common/src/main/java/com/dennn66/gwt/common/ItemDto.java
+/gwt/src/main/java/com/dennn66/gwt/client/_InCodeGUIAndRequestBuilder.java
+/gwt/src/main/java/com/dennn66/gwt/client/_WebApp.java
+/gwt/src/main/java/com/dennn66/gwt/client/AddItemForm.ui.xml
+/gwt/src/main/java/com/dennn66/gwt/client/AddItemFormWidget.java
+/gwt/src/main/java/com/dennn66/gwt/client/ItemsClient.java
+/gwt/src/main/java/com/dennn66/gwt/client/ItemsTable.ui.xml
+/gwt/src/main/java/com/dennn66/gwt/client/ItemsTableWidget.java
+/gwt/src/main/java/com/dennn66/gwt/client/WebApp.java
+/gwt/src/main/java/com/dennn66/gwt/WebApp.gwt.xml
+/server/src/main/java/com/dennn66/tasktracker/controllers/MainController.java
+/server/src/main/java/com/dennn66/tasktracker/repositories/ItemRepository.java
+/server/src/main/java/com/dennn66/tasktracker/services/ItemService.java
