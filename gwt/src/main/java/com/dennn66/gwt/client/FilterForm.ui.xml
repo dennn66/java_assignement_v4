@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:DecoratorPanel>
+        <g:FormPanel ui:field="form" method="PUT">
+            <g:VerticalPanel spacing="10">
+                <g:HorizontalPanel>
+                    <g:Label text="Creator:" width="100px"/>
+                    <g:TextBox name="creatorFilter" ui:field="creatorText"/>
+                </g:HorizontalPanel>
+                <g:HorizontalPanel>
+                    <g:Label text="Title:" width="100px"/>
+                    <g:TextBox name="nameFilter" ui:field="titleText"/>
+                </g:HorizontalPanel>
+                <g:ListBox name="statusFilter">
+                    <g:item value="ALL">All</g:item>
+                    <g:item value="OPEN">Open</g:item>
+                    <g:item value="INPROGRESS">In Progress</g:item>
+                    <g:item value="COMPLETED">Completed</g:item>
+                </g:ListBox>
+                <g:Button ui:field="btnSubmit">Filter</g:Button>
+            </g:VerticalPanel>
+        </g:FormPanel>
+    </g:DecoratorPanel>
+</ui:UiBinder>

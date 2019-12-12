@@ -1,10 +1,7 @@
 package com.dennn66.tasktracker.services;
 
-import com.dennn66.gwt.common.Task;
-import com.dennn66.gwt.common.User;
-import com.dennn66.tasktracker.repositories.TaskRepository;
+import com.dennn66.tasktracker.entities.User;
 import com.dennn66.tasktracker.repositories.UserRepository;
-import com.dennn66.tasktracker.repositories.specifications.TaskSpecifications;
 import com.dennn66.tasktracker.repositories.specifications.UserSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

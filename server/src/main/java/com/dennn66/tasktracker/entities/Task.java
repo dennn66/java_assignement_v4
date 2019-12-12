@@ -1,4 +1,4 @@
-package com.dennn66.gwt.common;
+package com.dennn66.tasktracker.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +32,11 @@ public class Task implements Serializable, Comparable<Task>{
 
     @Column(name = "status")
     private Status status; // статус
+
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
     @Override
     public int compareTo(Task task) {

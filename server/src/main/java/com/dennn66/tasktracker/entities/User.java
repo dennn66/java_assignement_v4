@@ -1,4 +1,4 @@
-package com.dennn66.gwt.common;
+package com.dennn66.tasktracker.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
