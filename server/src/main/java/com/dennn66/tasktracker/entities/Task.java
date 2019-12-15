@@ -19,11 +19,11 @@ public class Task implements Serializable, Comparable<Task>{
     @Column(name = "name")
     private String name;// название,
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "creator")
     private User creator;// имя владельца задачи,
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "assignee")
     private User assignee; // имя исполнителя,
 

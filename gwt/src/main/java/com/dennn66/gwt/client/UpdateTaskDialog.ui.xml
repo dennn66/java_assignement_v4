@@ -1,0 +1,41 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .panel {
+        background-color: ivory;
+        }
+    </ui:style>
+    <g:FlowPanel styleName="{style.panel}">
+        <g:Label>Dialog Content</g:Label>
+        <g:HorizontalPanel>
+            <g:Label text="Creator:" width="100px"/>
+            <g:Label text="" ui:field="creatorText"/>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel>
+            <g:Label text="Title:" width="100px"/>
+            <g:TextBox name="nameFilter" ui:field="titleText"/>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel>
+            <g:Label text="Description:" width="100px"/>
+            <g:TextBox name="description" ui:field="descriptionText"/>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel>
+            <g:ListBox name="status" ui:field="statusListBox">
+                <g:item value="OPEN">Open</g:item>
+                <g:item value="INPROGRESS">In Progress</g:item>
+                <g:item value="COMPLETED">Completed</g:item>
+            </g:ListBox>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel>
+            <g:ListBox name="assignee" ui:field="assigneeListBox">
+                <g:item value="-1L"></g:item>
+            </g:ListBox>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel>
+            <g:Button ui:field="btnSubmit">Update</g:Button>
+            <g:Button ui:field="btnCancel">Cancel</g:Button>
+            <g:Button ui:field="btnDelete" >Delete</g:Button>
+        </g:HorizontalPanel>
+    </g:FlowPanel>
+</ui:UiBinder>

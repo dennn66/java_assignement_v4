@@ -8,10 +8,14 @@ public class WebApp implements EntryPoint {
     public void onModuleLoad() {
         Defaults.setServiceRoot("http://localhost:8189/gwt-rest");
         TasksTableWidget tasksTableWidget = new TasksTableWidget();
-        VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(new AddTaskFormWidget(tasksTableWidget));
-        verticalPanel.add(new FilterFormWidget(tasksTableWidget));
-        verticalPanel.add(tasksTableWidget);
-        RootPanel.get().add(verticalPanel);
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        VerticalPanel leftVerticalPanel = new VerticalPanel();
+        leftVerticalPanel.add(new AddTaskFormWidget(tasksTableWidget));
+        leftVerticalPanel.add(new FilterFormWidget(tasksTableWidget));
+        VerticalPanel rightVerticalPanel = new VerticalPanel();
+        rightVerticalPanel.add(tasksTableWidget);
+        horizontalPanel.add(leftVerticalPanel);
+        horizontalPanel.add(rightVerticalPanel);
+        RootPanel.get().add(horizontalPanel);
     }
 }

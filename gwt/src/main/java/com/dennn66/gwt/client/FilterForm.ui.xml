@@ -12,13 +12,16 @@
                     <g:Label text="Title:" width="100px"/>
                     <g:TextBox name="nameFilter" ui:field="titleText"/>
                 </g:HorizontalPanel>
-                <g:ListBox name="statusFilter">
+                <g:ListBox name="statusFilter" ui:field="statusListBox">
                     <g:item value="ALL">All</g:item>
                     <g:item value="OPEN">Open</g:item>
                     <g:item value="INPROGRESS">In Progress</g:item>
                     <g:item value="COMPLETED">Completed</g:item>
                 </g:ListBox>
-                <g:Button ui:field="btnSubmit">Filter</g:Button>
+                <g:HorizontalPanel>
+                    <g:Button ui:field="btnSubmit">Filter</g:Button>
+                    <g:Button ui:field="btnClear">Clear</g:Button>
+                </g:HorizontalPanel>
             </g:VerticalPanel>
         </g:FormPanel>
     </g:DecoratorPanel>
