@@ -1,6 +1,6 @@
 package com.dennn66.tasktracker.repositories.specifications;
 
-import com.dennn66.gwt.common.Task;
+import com.dennn66.tasktracker.entities.Task;
 import org.springframework.data.jpa.domain.Specification;
 
 public class TaskSpecifications {

@@ -30,8 +30,7 @@ hs_err_pid*
 /gwt/src/main/java/com/dennn66/gwt/client/ItemsClient.java
 /gwt/src/main/java/com/dennn66/gwt/client/ItemsTable.ui.xml
 /gwt/src/main/java/com/dennn66/gwt/client/ItemsTableWidget.java
-/gwt/src/main/java/com/dennn66/gwt/client/WebApp.java
-/gwt/src/main/java/com/dennn66/gwt/WebApp.gwt.xml
 /server/src/main/java/com/dennn66/tasktracker/controllers/MainController.java
 /server/src/main/java/com/dennn66/tasktracker/repositories/ItemRepository.java
 /server/src/main/java/com/dennn66/tasktracker/services/ItemService.java
+/server/src/main/resources/private.properties
