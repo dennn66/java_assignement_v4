@@ -1,10 +1,12 @@
 package com.dennn66.tasktracker.services;
 
+import com.dennn66.gwt.common.TaskDto;
 import com.dennn66.tasktracker.entities.Task;
 import com.dennn66.tasktracker.repositories.TaskRepository;
 import com.dennn66.tasktracker.repositories.specifications.TaskSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -62,4 +64,5 @@ public class TaskService {
     public void remove(Long id) {
         taskRepository.deleteById(id);
     }
+
 }
