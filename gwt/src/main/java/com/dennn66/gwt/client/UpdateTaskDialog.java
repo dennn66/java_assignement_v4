@@ -94,7 +94,7 @@ public class UpdateTaskDialog extends DialogBox {
                 users.addAll(i);
                 users.stream().forEach(userDto -> {
                     if(userDto.getId() != taskDto.getAssigneeId())
-                        assigneeListBox.addItem(userDto.getName(), userDto.getId().toString());
+                        assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
                 });
             }
         });

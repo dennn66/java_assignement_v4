@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,9 +73,9 @@ public class TaskRestController {
                 TaskDto dto = new TaskDto(
                         task.getId(),
                         task.getName(),
-                        task.getCreator().getName(),
+                        task.getCreator().getUsername(),
                         task.getCreator().getId(),
-                        (task.getAssignee() == null)?"":task.getAssignee().getName(),
+                        (task.getAssignee() == null)?"":task.getAssignee().getUsername(),
                         (task.getAssignee() == null)?-1L:task.getAssignee().getId(),
                         task.getDescription(),
                         task.getStatus().getDisplayValue(),

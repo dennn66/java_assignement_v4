@@ -88,7 +88,7 @@ public class AddTaskFormWidget extends Composite {
                 assigneeListBox.addItem("", "-1");
                 assigneeListBox.setSelectedIndex(0);
                 users.stream().forEach(userDto -> {
-                    assigneeListBox.addItem(userDto.getName(), userDto.getId().toString());
+                    assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
                 });
             }
         });

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
@@ -16,13 +17,23 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JoinColumn(name = "id")
     private Long id;//id,
-    @Column(name = "name")
-    private String name;// user,
+    @Column(name = "username")
+    private String username;// user,
+
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "email")
     private String email;// ,
 
     @Column(name = "status")
     private Status status; // статус
+
+    @ManyToMany
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
 
     public enum Status {
         ENABLED("Enabled"), DISABLED("Disabled");
@@ -49,7 +60,7 @@ public class User implements Serializable{
 
     @Override
     public String toString() {
-        return name;
+        return username;
     }
 
     @Override
@@ -60,5 +71,5 @@ public class User implements Serializable{
     }
 
     @Override
-    public int hashCode() { return id.intValue() + name.hashCode(); }
+    public int hashCode() { return id.intValue() + username.hashCode(); }
 }
