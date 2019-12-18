@@ -3,6 +3,7 @@ package com.dennn66.gwt.client;
 import com.dennn66.gwt.common.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -71,26 +72,32 @@ public class AddTaskFormWidget extends Composite {
     }
 
     public void refreshUsers(){
-        usersClient.getAllUsers(new MethodCallback<List<UserDto>>() {
-            @Override
-            public void onFailure(Method method, Throwable throwable) {
-                GWT.log(throwable.toString());
-                GWT.log(throwable.getMessage());
-                Window.alert("Невозможно получить список пользователей: Сервер не отвечает");
-            }
+        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        GWT.log("getAllUsers STORAGE: " + token);
+        if(token == null) {
 
-            @Override
-            public void onSuccess(Method method, List<UserDto> i) {
-                GWT.log("Received " + i.size() + " users");
-                List<UserDto> users = new ArrayList<>();
-                users.addAll(i);
-                assigneeListBox.clear();
-                assigneeListBox.addItem("", "-1");
-                assigneeListBox.setSelectedIndex(0);
-                users.stream().forEach(userDto -> {
-                    assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
-                });
-            }
-        });
+        } else {
+            usersClient.getAllUsers(token, new MethodCallback<List<UserDto>>() {
+                @Override
+                public void onFailure(Method method, Throwable throwable) {
+                    GWT.log(throwable.toString());
+                    GWT.log(throwable.getMessage());
+                    Window.alert("Невозможно получить список пользователей: Сервер не отвечает");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<UserDto> i) {
+                    GWT.log("Received " + i.size() + " users");
+                    List<UserDto> users = new ArrayList<>();
+                    users.addAll(i);
+                    assigneeListBox.clear();
+                    assigneeListBox.addItem("", "-1");
+                    assigneeListBox.setSelectedIndex(0);
+                    users.stream().forEach(userDto -> {
+                        assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
+                    });
+                }
+            });
+        }
     }
 }

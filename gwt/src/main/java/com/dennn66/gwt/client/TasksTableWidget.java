@@ -130,10 +130,15 @@ public class TasksTableWidget extends Composite {
 
     public void refresh() {
         String token = Storage.getLocalStorageIfSupported().getItem("jwt");
-        GWT.log("STORAGE: " + token);
+        GWT.log("getAllTasks: STORAGE: " + token);
         if(token == null) {
             webApp.refresh();
         }else {
+
+            // При попытке добавить в заголовок Access-Control-Allow-Origin "*"  -  в консоли ошибка:
+            // XMLHttpRequest.java:343 Refused to set unsafe header "Access-Control-Request-Headers"
+
+
             client.getAllTasks(token, "Access-Control-Allow-Origin \"*\"",creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {

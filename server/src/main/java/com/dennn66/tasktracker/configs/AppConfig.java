@@ -15,9 +15,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");  // работает получение токена, getAll не работает
-        //registry.addMapping("/**").allowedOrigins("http://localhost"); // ничего не работает
-        //registry.addMapping("/**").allowedOrigins("http://localhost:8888"); // ничего не работает
+        //registry.addMapping("/**");  // работает получение токена, getAll не работает
+        //registry.addMapping("/**").allowedOrigins("http://localhost"); // работает получение токена, getAll не работает
+        registry.addMapping("/**").allowedOrigins("http://localhost:8888"); // работает получение токена, getAll не работает
     }
     @Bean
     public ModelMapper modelMapper() {
