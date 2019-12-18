@@ -90,7 +90,7 @@ public class UpdateTaskDialog extends DialogBox {
             // from origin 'http://localhost:8888' has been blocked by CORS policy:
             // Response to preflight request doesn't pass access control check:
             // It does not have HTTP ok status.
-            
+
             usersClient.getAllUsers(token, new MethodCallback<List<UserDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {
