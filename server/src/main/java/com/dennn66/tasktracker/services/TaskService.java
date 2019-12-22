@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,29 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Page<Task> getAllTasks(Map<String,String> params, Pageable pageable) {
+    public Page<Task> getAllTasks(Map<String,String> params) {
+        int tasksPerPage = 50;
+
+        Long pageNumber;
+        try{
+            pageNumber = Long.parseLong(params.get("pageNumber"));
+        } catch (NumberFormatException e){
+            pageNumber = 1L;
+        }
+        if (pageNumber < 1L) {
+            pageNumber = 1L;
+        }
+        Pageable pageable = PageRequest.of(
+                pageNumber.intValue() - 1,
+                tasksPerPage,
+                Sort.Direction.ASC,
+                "id");
         String statusFilter = params.get("statusFilter");
         String creatorFilter = params.get("creatorFilter");
         String nameFilter = params.get("nameFilter");
 
         Specification<Task> spec = Specification.where(null);
-        if (false & creatorFilter != null &&
+        if (creatorFilter != null &&
                 !creatorFilter.equals("null") &&
                 !creatorFilter.equals("")) {
             spec = spec.and(TaskSpecifications.creatorContains(creatorFilter));

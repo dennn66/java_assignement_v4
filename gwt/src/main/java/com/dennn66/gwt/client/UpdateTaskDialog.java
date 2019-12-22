@@ -85,12 +85,6 @@ public class UpdateTaskDialog extends DialogBox {
         if(token == null) {
 
         } else {
-            // В консоли ошибка:
-            // Access to XMLHttpRequest at 'http://localhost:8189/gwt-rest/v1/users'
-            // from origin 'http://localhost:8888' has been blocked by CORS policy:
-            // Response to preflight request doesn't pass access control check:
-            // It does not have HTTP ok status.
-
             usersClient.getAllUsers(token, new MethodCallback<List<UserDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {
@@ -115,30 +109,36 @@ public class UpdateTaskDialog extends DialogBox {
 
     @UiHandler("btnSubmit")
     public void submitClick(ClickEvent event) {
-        //taskDto.setAssignee(assigneeListBox.getSelectedItemText());
-        taskDto.setAssigneeId(Long.parseLong(assigneeListBox.getSelectedValue()));
-        taskDto.setName(titleText.getText());
-        taskDto.setDescription(descriptionText.getText());
-        taskDto.setStatusId(statusListBox.getSelectedValue());
+        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        GWT.log("getAllUsers STORAGE: " + token);
+        if(token == null) {
 
-        tasksClient.updateTask(taskDto.getId().toString(),
-                assigneeListBox.getSelectedValue(),
-                titleText.getText(),
-                descriptionText.getText(),
-                statusListBox.getSelectedValue(),
-                new MethodCallback<Void>() {
-            @Override
-            public void onFailure(Method method, Throwable throwable) {
-                GWT.log(throwable.toString());
-                GWT.log(throwable.getMessage());
-            }
+        } else {
+            //taskDto.setAssignee(assigneeListBox.getSelectedItemText());
+            taskDto.setAssigneeId(Long.parseLong(assigneeListBox.getSelectedValue()));
+            taskDto.setName(titleText.getText());
+            taskDto.setDescription(descriptionText.getText());
+            taskDto.setStatusId(statusListBox.getSelectedValue());
 
-            @Override
-            public void onSuccess(Method method, Void result) {
-                tasksTableWidget.refresh();
-            }
-        });
-        this.hide();
+            tasksClient.updateTask(token, taskDto.getId().toString(),
+                    assigneeListBox.getSelectedValue(),
+                    titleText.getText(),
+                    descriptionText.getText(),
+                    statusListBox.getSelectedValue(),
+                    new MethodCallback<Void>() {
+                        @Override
+                        public void onFailure(Method method, Throwable throwable) {
+                            GWT.log(throwable.toString());
+                            GWT.log(throwable.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Method method, Void result) {
+                            tasksTableWidget.refresh();
+                        }
+                    });
+            this.hide();
+        }
     }
     @UiHandler("btnCancel")
     public void cancelClick(ClickEvent event) {
@@ -147,19 +147,25 @@ public class UpdateTaskDialog extends DialogBox {
     }
     @UiHandler("btnDelete")
     public void deleteClick(ClickEvent event) {
-        tasksClient.removeTask(taskDto.getId().toString(), new MethodCallback<Void>() {
-            @Override
-            public void onFailure(Method method, Throwable throwable) {
-                GWT.log(throwable.toString());
-                GWT.log(throwable.getMessage());
-            }
+        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        GWT.log("getAllUsers STORAGE: " + token);
+        if(token == null) {
 
-            @Override
-            public void onSuccess(Method method, Void result) {
-                tasksTableWidget.refresh();
-            }
-        });
-        this.hide();
-        //tasksTableWidget.refresh();
+        } else {
+            tasksClient.removeTask(token, taskDto.getId().toString(), new MethodCallback<Void>() {
+                @Override
+                public void onFailure(Method method, Throwable throwable) {
+                    GWT.log(throwable.toString());
+                    GWT.log(throwable.getMessage());
+                }
+
+                @Override
+                public void onSuccess(Method method, Void result) {
+                    tasksTableWidget.refresh();
+                }
+            });
+            this.hide();
+            //tasksTableWidget.refresh();
+        }
     }
 }

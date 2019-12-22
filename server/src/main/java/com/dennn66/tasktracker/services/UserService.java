@@ -1,11 +1,14 @@
 package com.dennn66.tasktracker.services;
 
+import com.dennn66.tasktracker.entities.Task;
 import com.dennn66.tasktracker.entities.User;
 import com.dennn66.tasktracker.repositories.UserRepository;
 import com.dennn66.tasktracker.repositories.specifications.UserSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,24 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Page<User> getAllUsers(Map<String,String> params, Pageable pageable) {
+    public Page<User> getAllUsers(Map<String,String> params) {
+        int usersPerPage = 5;
+
+        Long pageNumber;
+        try{
+            pageNumber = Long.parseLong(params.get("pageNumber"));
+        } catch (NumberFormatException e){
+            pageNumber = 1L;
+        }
+        if (pageNumber < 1L) {
+            pageNumber = 1L;
+        }
+        Pageable pageable = PageRequest.of(
+                pageNumber.intValue() - 1,
+                usersPerPage,
+                Sort.Direction.ASC,
+                "id");
+
         String statusFilter = params.get("statusFilter");
         String nameFilter = params.get("nameFilter");
         Specification<User> spec = Specification.where(null);
@@ -51,4 +71,8 @@ public class UserService {
     public void update(User user) {
         userRepository.save(user);}
     public Optional<User> findById(Long id) {return userRepository.findById(id);}
+
+    public User getUserByName(String username) {
+        return  userRepository.findOneByUsername(username);
+    }
 }

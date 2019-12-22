@@ -11,8 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,21 +27,8 @@ import java.util.function.Function;
 public class TaskRestController {
     private TaskService taskService;
     private UserService userService;
-//    private int tasksPerPage;
-//    private Long pageNumber;
-//    private Map<String, String> params;
-//    private PageRequest pageRequest;
 
-    public TaskRestController() {
-//        tasksPerPage = 5;
-//        pageNumber = 1L;
-//        params = new HashMap<String, String>();
-//        pageRequest = PageRequest.of(
-//                pageNumber.intValue() - 1,
-//                tasksPerPage,
-//                Sort.Direction.ASC,
-//                "id");
-    }
+    public TaskRestController() {    }
 
     @Autowired
     public void setTaskService(TaskService taskService) {
@@ -51,22 +42,8 @@ public class TaskRestController {
 
     @RequestMapping(path = "/v1/tasks", method = RequestMethod.GET)
     public List<TaskDto> showAllTasks(@RequestParam Map<String,String> params) {
-        int tasksPerPage = 50;
 
-        Long pageNumber;
-        try{
-            pageNumber = Long.parseLong(params.get("pageNumber"));
-        } catch (NumberFormatException e){
-            pageNumber = 1L;
-        }
-        if (pageNumber < 1L) {
-            pageNumber = 1L;
-        }
-        Page<Task> tasksPage = taskService.getAllTasks(params, PageRequest.of(
-                pageNumber.intValue() - 1,
-                tasksPerPage,
-                Sort.Direction.ASC,
-                "id"));
+        Page<Task> tasksPage = taskService.getAllTasks(params);
         Page<TaskDto> dtoPage = tasksPage.map(new Function<Task, TaskDto>() {
             @Override
             public TaskDto apply(Task task) {
@@ -94,14 +71,28 @@ public class TaskRestController {
         return new ResponseEntity<String>("Successfully removed", HttpStatus.OK);
     }
     @PostMapping("/v1/tasks")
-    public ResponseEntity<String> addTasks(@RequestParam Map<String,String> params) {
+    public ResponseEntity<String> addTasks(@RequestParam Map<String,String> params,
+                                           HttpServletRequest request) {
         System.out.println("addTasks");
         System.out.println(params.toString());
-        if(params.containsKey("name")){
-            Task task = new Task(params.get("name"), params.getOrDefault("description", ""));
-            task.setAssignee(userService.findById(Long.parseLong(params.get("assignee"))).get());
-            List<User> users = userService.getAllEnabledUsers(); // temporary solution
-            task.setCreator(users.get(0));                       // temporary solution
+        Principal principal = request.getUserPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        } else if (principal instanceof UsernamePasswordAuthenticationToken) {
+            username = ((UsernamePasswordAuthenticationToken)principal).getName();
+        }  else {
+            username = principal.toString();
+        }
+        System.out.println(username);
+        if(params.containsKey("title")){
+            Task task = new Task(params.get("title"), params.getOrDefault("description", ""));
+            if(params.containsKey("assigneeId")) {
+                try{
+                    task.setAssignee(userService.findById(Long.parseLong(params.get("assigneeId"))).get());
+                } catch(Exception e){}
+            }
+            task.setCreator(userService.getUserByName(username));
             taskService.insert(task);
             return new ResponseEntity<String>("Successfully added", HttpStatus.OK);
         }

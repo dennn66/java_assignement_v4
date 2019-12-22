@@ -31,22 +31,7 @@ public class UserController {
             Model model,
             @RequestParam Map<String,String> params
     ) {
-        int usersPerPage = 5;
-
-        Long pageNumber;
-        try{
-            pageNumber = Long.parseLong(params.get("pageNumber"));
-        } catch (NumberFormatException e){
-            pageNumber = 1L;
-        }
-        if (pageNumber < 1L) {
-            pageNumber = 1L;
-        }
-        Page<User> usersPage = userService.getAllUsers(params, PageRequest.of(
-                pageNumber.intValue() - 1,
-                usersPerPage,
-                Sort.Direction.ASC,
-                "id"));
+        Page<User> usersPage = userService.getAllUsers(params);
         model.addAttribute("usersPage", usersPage);
 
         Iterator<Map.Entry<String, String>> entries = params.entrySet().iterator();
