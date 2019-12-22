@@ -2,6 +2,7 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
         <g:VerticalPanel horizontalAlignment="center" spacing='10' width="700px">
+                <g:Button ui:field="btnLogout">Logout</g:Button>
                 <c:CellTable ui:field="table" width="100%" pageSize="15">
                 </c:CellTable>
         <c:SimplePager ui:field='pager'  location='CENTER'/>

@@ -4,6 +4,7 @@ import com.dennn66.gwt.common.TaskDto;
 import com.dennn66.gwt.common.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -79,25 +80,37 @@ public class UpdateTaskDialog extends DialogBox {
         }
     }
     public void refreshUsers(){
-        usersClient.getAllUsers(new MethodCallback<List<UserDto>>() {
-            @Override
-            public void onFailure(Method method, Throwable throwable) {
-                GWT.log(throwable.toString());
-                GWT.log(throwable.getMessage());
-                Window.alert("Невозможно получить список пользователей: Сервер не отвечает");
-            }
+        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        GWT.log("getAllUsers STORAGE: " + token);
+        if(token == null) {
 
-            @Override
-            public void onSuccess(Method method, List<UserDto> i) {
-                GWT.log("Received " + i.size() + " users");
-                List<UserDto> users = new ArrayList<>();
-                users.addAll(i);
-                users.stream().forEach(userDto -> {
-                    if(userDto.getId() != taskDto.getAssigneeId())
-                        assigneeListBox.addItem(userDto.getName(), userDto.getId().toString());
-                });
-            }
-        });
+        } else {
+            // В консоли ошибка:
+            // Access to XMLHttpRequest at 'http://localhost:8189/gwt-rest/v1/users'
+            // from origin 'http://localhost:8888' has been blocked by CORS policy:
+            // Response to preflight request doesn't pass access control check:
+            // It does not have HTTP ok status.
+
+            usersClient.getAllUsers(token, new MethodCallback<List<UserDto>>() {
+                @Override
+                public void onFailure(Method method, Throwable throwable) {
+                    GWT.log(throwable.toString());
+                    GWT.log(throwable.getMessage());
+                    Window.alert("Невозможно получить список пользователей: Сервер не отвечает");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<UserDto> i) {
+                    GWT.log("Received " + i.size() + " users");
+                    List<UserDto> users = new ArrayList<>();
+                    users.addAll(i);
+                    users.stream().forEach(userDto -> {
+                        if (userDto.getId() != taskDto.getAssigneeId())
+                            assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
+                    });
+                }
+            });
+        }
     }
 
     @UiHandler("btnSubmit")

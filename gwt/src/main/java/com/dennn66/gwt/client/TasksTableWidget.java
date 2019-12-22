@@ -8,9 +8,12 @@ import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
@@ -29,7 +32,7 @@ public class TasksTableWidget extends Composite {
     @UiField
     CellTable<TaskDto> table;
     SimplePager pager;
-
+    private WebApp webApp;
     private String creatorFilter;
     private String nameFilter;
     private String statusFilter;
@@ -56,7 +59,8 @@ public class TasksTableWidget extends Composite {
 
     private static TasksTableBinder uiBinder = GWT.create(TasksTableBinder.class);
 
-    public TasksTableWidget() {
+    public TasksTableWidget(WebApp webApp) {
+        this.webApp = webApp;
         initWidget(uiBinder.createAndBindUi(this));
         client = GWT.create(TasksClient.class);
 
@@ -125,21 +129,38 @@ public class TasksTableWidget extends Composite {
     }
 
     public void refresh() {
-        client.getAllTasks(creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
-            @Override
-            public void onFailure(Method method, Throwable throwable) {
-                GWT.log(throwable.toString());
-                GWT.log(throwable.getMessage());
-                Window.alert("Невозможно получить список задач: Сервер не отвечает");
-            }
+        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        GWT.log("getAllTasks: STORAGE: " + token);
+        if(token == null) {
+            webApp.refresh();
+        }else {
 
-            @Override
-            public void onSuccess(Method method, List<TaskDto> i) {
-                GWT.log("Received " + i.size() + " tasks");
-                List<TaskDto> tasks = new ArrayList<>();
-                tasks.addAll(i);
-                table.setRowData(tasks);
-            }
-        });
+            // При попытке добавить в заголовок Access-Control-Allow-Origin "*"  -  в консоли ошибка:
+            // XMLHttpRequest.java:343 Refused to set unsafe header "Access-Control-Request-Headers"
+
+
+            client.getAllTasks(token, "Access-Control-Allow-Origin \"*\"",creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
+                @Override
+                public void onFailure(Method method, Throwable throwable) {
+                    GWT.log(throwable.toString());
+                    GWT.log(throwable.getMessage());
+                    Window.alert("Невозможно получить список задач: Сервер не отвечает");
+                }
+
+                @Override
+                public void onSuccess(Method method, List<TaskDto> i) {
+                    GWT.log("Received " + i.size() + " tasks");
+                    List<TaskDto> tasks = new ArrayList<>();
+                    tasks.addAll(i);
+                    table.setRowData(tasks);
+                }
+            });
+        }
+    }
+
+    @UiHandler("btnLogout")
+    public void logoutClick(ClickEvent event) {
+        Storage.getLocalStorageIfSupported().removeItem("jwt");
+        webApp.refresh();
     }
 }

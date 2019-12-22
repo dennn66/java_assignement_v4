@@ -12,6 +12,8 @@ import java.util.List;
 public interface TasksClient extends RestService {
     @GET
     void getAllTasks(
+            @HeaderParam("Authorization") String token,
+            @HeaderParam("Access-Control-Request-Headers") String origin,
             @QueryParam("creatorFilter") String creatorFilter,
             @QueryParam("nameFilter") String nameFilter,
             @QueryParam("statusFilter") String statusFilter,
