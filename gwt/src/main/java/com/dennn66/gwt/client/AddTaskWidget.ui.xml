@@ -5,14 +5,15 @@
         <g:VerticalPanel spacing="10">
             <g:HorizontalPanel>
                 <g:Label text="Title:" width="100px"/>
-                <g:TextBox name="name" ui:field="titleText"/>
+                <g:TextBox ui:field="titleText"/>
             </g:HorizontalPanel>
             <g:HorizontalPanel>
                 <g:Label text="Description:" width="100px"/>
-                <g:TextBox name="description" ui:field="descriptionText"/>
+                <g:TextBox ui:field="descriptionText"/>
             </g:HorizontalPanel>
             <g:HorizontalPanel>
-                <g:ListBox name="assignee" ui:field="assigneeListBox">
+                <g:Label text="Assignee:" width="100px"/>
+                <g:ListBox ui:field="assigneeListBox">
                     <g:item value="-1L"></g:item>
                 </g:ListBox>
             </g:HorizontalPanel>

@@ -34,3 +34,5 @@ hs_err_pid*
 /server/src/main/java/com/dennn66/tasktracker/repositories/ItemRepository.java
 /server/src/main/java/com/dennn66/tasktracker/services/ItemService.java
 /server/src/main/resources/private.properties
+/server/src/main/java/com/dennn66/tasktracker/mappers/CategoryMapper.java
+/server/src/main/java/com/dennn66/tasktracker/mappers/ItemMapper.java

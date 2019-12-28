@@ -4,20 +4,10 @@ package com.dennn66.gwt.common;
 import java.io.Serializable;
 
 
-public class UserDto implements Serializable{
+public class UserReferenceDto implements Serializable{
     private Long id;//id,
     private String username;// user,
-    private String password;
     private String email;// ,
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 
     public Long getId() {
         return id;
@@ -43,12 +33,16 @@ public class UserDto implements Serializable{
         this.email = email;
     }
 
-    public UserDto() {
+    public UserReferenceDto() {
     }
 
-    public UserDto(Long id, String username, String email) {
+    public UserReferenceDto(Long id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
+    }
+
+    public UserReferenceDto(Long id) {
+        this.id = id;
     }
 }

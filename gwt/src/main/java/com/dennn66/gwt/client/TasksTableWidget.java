@@ -31,7 +31,6 @@ import java.util.List;
 public class TasksTableWidget extends Composite {
     @UiField
     CellTable<TaskDto> table;
-    SimplePager pager;
     private WebApp webApp;
     private String creatorFilter;
     private String nameFilter;
@@ -67,7 +66,6 @@ public class TasksTableWidget extends Composite {
         UpdateTaskDialog m = new UpdateTaskDialog(this);
         m.hide();
 
-//         table.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.ENABLED);
         TextColumn<TaskDto> idColumn = new TextColumn<TaskDto>() {
             @Override
             public String getValue(TaskDto task) {
@@ -106,7 +104,7 @@ public class TasksTableWidget extends Composite {
         TextColumn<TaskDto> assigneeColumn = new TextColumn<TaskDto>() {
             @Override
             public String getValue(TaskDto task) {
-                return task.getAssignee();
+                return (task.getAssignee() == null)?"":task.getAssignee().getUsername();
             }
         };
         table.addColumn(assigneeColumn, "Assignee");
@@ -114,37 +112,46 @@ public class TasksTableWidget extends Composite {
         TextColumn<TaskDto> creatorColumn = new TextColumn<TaskDto>() {
             @Override
             public String getValue(TaskDto task) {
-                return task.getCreator();
+                return task.getCreator().getUsername();
             }
         };
         table.addColumn(creatorColumn, "Creator");
+
+        TextColumn<TaskDto> statusColumn = new TextColumn<TaskDto>() {
+            @Override
+            public String getValue(TaskDto task) {
+                return task.getStatus();
+            }
+        };
+        table.addColumn(statusColumn, "Status");
 
         table.setColumnWidth(idColumn, 100, Style.Unit.PX);
         table.setColumnWidth(nameColumn, 400, Style.Unit.PX);
         table.setColumnWidth(descriptionColumn, 400, Style.Unit.PX);
         table.setColumnWidth(assigneeColumn, 200, Style.Unit.PX);
         table.setColumnWidth(creatorColumn, 200, Style.Unit.PX);
+        table.setColumnWidth(statusColumn, 200, Style.Unit.PX);
 
         refresh();
     }
 
     public void refresh() {
-        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        String token = Utils.getToken();
         GWT.log("getAllTasks: STORAGE: " + token);
         if(token == null) {
             webApp.refresh();
         }else {
-
-            // При попытке добавить в заголовок Access-Control-Allow-Origin "*"  -  в консоли ошибка:
-            // XMLHttpRequest.java:343 Refused to set unsafe header "Access-Control-Request-Headers"
-
-
             client.getAllTasks(token, creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {
                     GWT.log(throwable.toString());
                     GWT.log(throwable.getMessage());
-                    Window.alert("Невозможно получить список задач: Сервер не отвечает");
+                    GWT.log(Integer.toString(method.getResponse().getStatusCode()));
+                    if(method.getResponse().getStatusCode() == 401){
+                        Utils.removeToken();
+                        webApp.refresh();
+                    } else
+                        Window.alert("Невозможно получить список задач: " + method.getResponse().getText() + " Status code: " + method.getResponse().getStatusCode());
                 }
 
                 @Override
@@ -160,7 +167,7 @@ public class TasksTableWidget extends Composite {
 
     @UiHandler("btnLogout")
     public void logoutClick(ClickEvent event) {
-        Storage.getLocalStorageIfSupported().removeItem("jwt");
+        Utils.removeToken();
         webApp.refresh();
     }
 }

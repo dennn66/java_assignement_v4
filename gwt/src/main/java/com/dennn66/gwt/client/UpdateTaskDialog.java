@@ -2,6 +2,7 @@ package com.dennn66.gwt.client;
 
 import com.dennn66.gwt.common.TaskDto;
 import com.dennn66.gwt.common.UserDto;
+import com.dennn66.gwt.common.UserReferenceDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.storage.client.Storage;
@@ -60,7 +61,7 @@ public class UpdateTaskDialog extends DialogBox {
     @Override
     public void show() {
         if(taskDto != null) {
-            creatorText.setText(taskDto.getCreator());
+            creatorText.setText(taskDto.getCreator().getUsername());
             titleText.setText(taskDto.getName());
             descriptionText.setText(taskDto.getDescription());
             for (int index = 0; index < statusListBox.getItemCount(); index++) {
@@ -71,36 +72,39 @@ public class UpdateTaskDialog extends DialogBox {
             }
             assigneeListBox.clear();
             assigneeListBox.addItem("", "1");
-            if(taskDto.getAssigneeId() > 0) {
-                assigneeListBox.addItem(taskDto.getAssignee(), taskDto.getAssigneeId().toString());
-                assigneeListBox.setSelectedIndex(1);
+            if(taskDto.getAssignee() != null) {
+                if (taskDto.getAssignee().getId() > 0) {
+                    assigneeListBox.addItem(taskDto.getAssignee().getUsername(), taskDto.getAssignee().getId().toString());
+                    assigneeListBox.setSelectedIndex(1);
+                }
             }
             refreshUsers();
             super.show();
         }
     }
     public void refreshUsers(){
-        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        String token = Utils.getToken();//Storage.getLocalStorageIfSupported().getItem("jwt");
         GWT.log("getAllUsers STORAGE: " + token);
         if(token == null) {
 
         } else {
-            usersClient.getAllUsers(token, new MethodCallback<List<UserDto>>() {
+            usersClient.getAllUsers(token, new MethodCallback<List<UserReferenceDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {
                     GWT.log(throwable.toString());
                     GWT.log(throwable.getMessage());
-                    Window.alert("Невозможно получить список пользователей: Сервер не отвечает");
+                    Window.alert("Невозможно получить список пользователей: " + method.getResponse().getText());
                 }
 
                 @Override
-                public void onSuccess(Method method, List<UserDto> i) {
+                public void onSuccess(Method method, List<UserReferenceDto> i) {
                     GWT.log("Received " + i.size() + " users");
-                    List<UserDto> users = new ArrayList<>();
+                    List<UserReferenceDto> users = new ArrayList<>();
                     users.addAll(i);
                     users.stream().forEach(userDto -> {
-                        if (userDto.getId() != taskDto.getAssigneeId())
-                            assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
+                        Long assigneeId = (taskDto.getAssignee() == null)?-1L:taskDto.getAssignee().getId();
+                            if (userDto.getId() != assigneeId)
+                                assigneeListBox.addItem(userDto.getUsername(), userDto.getId().toString());
                     });
                 }
             });
@@ -109,27 +113,29 @@ public class UpdateTaskDialog extends DialogBox {
 
     @UiHandler("btnSubmit")
     public void submitClick(ClickEvent event) {
-        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        String token = Utils.getToken();//Storage.getLocalStorageIfSupported().getItem("jwt");
         GWT.log("getAllUsers STORAGE: " + token);
         if(token == null) {
 
         } else {
             //taskDto.setAssignee(assigneeListBox.getSelectedItemText());
-            taskDto.setAssigneeId(Long.parseLong(assigneeListBox.getSelectedValue()));
+            taskDto.setAssignee(new UserReferenceDto(Long.parseLong(assigneeListBox.getSelectedValue())));
             taskDto.setName(titleText.getText());
             taskDto.setDescription(descriptionText.getText());
             taskDto.setStatusId(statusListBox.getSelectedValue());
-
-            tasksClient.updateTask(token, taskDto.getId().toString(),
-                    assigneeListBox.getSelectedValue(),
-                    titleText.getText(),
-                    descriptionText.getText(),
-                    statusListBox.getSelectedValue(),
+            tasksClient.updateTask(token,
+                    new TaskDto(taskDto.getId(),
+                            titleText.getText(),
+                            new UserReferenceDto(Long.parseLong(assigneeListBox.getSelectedValue())),
+                            descriptionText.getText(),
+                            statusListBox.getSelectedValue()
+                    ),
                     new MethodCallback<Void>() {
                         @Override
                         public void onFailure(Method method, Throwable throwable) {
                             GWT.log(throwable.toString());
                             GWT.log(throwable.getMessage());
+                            Window.alert("Невозможно обновить задачу: " + method.getResponse().getText());
                         }
 
                         @Override
@@ -147,7 +153,7 @@ public class UpdateTaskDialog extends DialogBox {
     }
     @UiHandler("btnDelete")
     public void deleteClick(ClickEvent event) {
-        String token = Storage.getLocalStorageIfSupported().getItem("jwt");
+        String token = Utils.getToken();
         GWT.log("getAllUsers STORAGE: " + token);
         if(token == null) {
 
@@ -157,6 +163,7 @@ public class UpdateTaskDialog extends DialogBox {
                 public void onFailure(Method method, Throwable throwable) {
                     GWT.log(throwable.toString());
                     GWT.log(throwable.getMessage());
+                    Window.alert("Невозможно удалить задачу: " + method.getResponse().getText());
                 }
 
                 @Override
@@ -165,7 +172,6 @@ public class UpdateTaskDialog extends DialogBox {
                 }
             });
             this.hide();
-            //tasksTableWidget.refresh();
         }
     }
 }

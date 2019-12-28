@@ -5,19 +5,5 @@
                 <g:Button ui:field="btnLogout">Logout</g:Button>
                 <c:CellTable ui:field="table" width="100%" pageSize="15">
                 </c:CellTable>
-        <c:SimplePager ui:field='pager'  location='CENTER'/>
         </g:VerticalPanel>
 </ui:UiBinder>
-<!--<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"-->
-<!--             xmlns:g="urn:import:com.google.gwt.user.client.ui"-->
-<!--             xmlns:c="urn:import:com.google.gwt.user.cellview.client">-->
-
-<!--<g:HTMLPanel>-->
-<!--        <g:VerticalPanel horizontalAlignment="center" spacing='10'-->
-<!--                         width="700px">-->
-<!--                <c:CellTable ui:field="table" width="100%" pageSize="15"/>-->
-<!--                <c:SimplePager ui:field="pager" location="CENTER"/>-->
-<!--                <g:Button ui:field="btnOk">Ok</g:Button>-->
-<!--        </g:VerticalPanel>-->
-<!--</g:HTMLPanel>-->
-<!--</ui:UiBinder>-->
