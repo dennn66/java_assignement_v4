@@ -1,26 +1,25 @@
 package com.dennn66.tasktracker.controllers;
 
+import com.dennn66.gwt.common.TaskCreateDto;
 import com.dennn66.gwt.common.TaskDto;
-import com.dennn66.tasktracker.entities.Task;
-import com.dennn66.tasktracker.entities.User;
+import com.dennn66.gwt.common.ValidationErrorDto;
+import com.dennn66.tasktracker.exceptions.ResourceNotFoundException;
 import com.dennn66.tasktracker.services.TaskService;
 import com.dennn66.tasktracker.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 @RestController
 @CrossOrigin
@@ -40,41 +39,38 @@ public class TaskRestController {
         this.userService = userService;
     }
 
-    @RequestMapping(path = "/v1/tasks", method = RequestMethod.GET)
-    public List<TaskDto> showAllTasks(@RequestParam Map<String,String> params) {
+    @GetMapping("/v1/tasks")
+    public ResponseEntity<List<TaskDto>> getAll(@RequestParam Map<String,String> params) {
+        List<TaskDto> tasks =taskService.getAllTasks(params);
+        return new ResponseEntity<>(taskService.getAllTasks(params), HttpStatus.OK);
+    }
 
-        Page<Task> tasksPage = taskService.getAllTasks(params);
-        Page<TaskDto> dtoPage = tasksPage.map(new Function<Task, TaskDto>() {
-            @Override
-            public TaskDto apply(Task task) {
-                TaskDto dto = new TaskDto(
-                        task.getId(),
-                        task.getName(),
-                        task.getCreator().getUsername(),
-                        task.getCreator().getId(),
-                        (task.getAssignee() == null)?"":task.getAssignee().getUsername(),
-                        (task.getAssignee() == null)?-1L:task.getAssignee().getId(),
-                        task.getDescription(),
-                        task.getStatus().getDisplayValue(),
-                        task.getStatus().toString()
-                        );
-                return dto;
-            }
-        });
-        System.out.println(tasksPage.toList().toString());
-        return dtoPage.toList();
+    @GetMapping("/v1/tasks/{id}")
+    public ResponseEntity<TaskDto> getOne(@PathVariable Long id) {
+        if (!taskService.existsById(id)) {
+            throw new ResourceNotFoundException("Task with id: " + id + " not found");
+        }
+        return new ResponseEntity<>(taskService.findOne(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/v1/tasks/{id}")
-    public ResponseEntity<String> removeTasks(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         taskService.remove(id);
-        return new ResponseEntity<String>("Successfully removed", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PostMapping("/v1/tasks")
-    public ResponseEntity<String> addTasks(@RequestParam Map<String,String> params,
-                                           HttpServletRequest request) {
-        System.out.println("addTasks");
-        System.out.println(params.toString());
+    public ResponseEntity<?> create(@RequestBody @Valid TaskCreateDto taskCreateDto,
+                                    BindingResult bindingResult,
+                                    HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            for (ObjectError o : bindingResult.getAllErrors()) {
+                errorMessage.append(o.getDefaultMessage()).append(";\n");
+            }
+            return new ResponseEntity<>(new ValidationErrorDto(errorMessage.toString()), HttpStatus.BAD_REQUEST);
+            //return new ResponseEntity<>(errorMessage.toString(), HttpStatus.BAD_REQUEST);
+        }
         Principal principal = request.getUserPrincipal();
         String username;
         if (principal instanceof UserDetails) {
@@ -84,40 +80,24 @@ public class TaskRestController {
         }  else {
             username = principal.toString();
         }
-        System.out.println(username);
-        if(params.containsKey("title")){
-            Task task = new Task(params.get("title"), params.getOrDefault("description", ""));
-            if(params.containsKey("assigneeId")) {
-                try{
-                    task.setAssignee(userService.findById(Long.parseLong(params.get("assigneeId"))).get());
-                } catch(Exception e){}
-            }
-            task.setCreator(userService.getUserByName(username));
-            taskService.insert(task);
-            return new ResponseEntity<String>("Successfully added", HttpStatus.OK);
-        }
-        return new ResponseEntity<String>("Fail", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(taskService.save(taskCreateDto,
+                userService.getUserByName(username)), HttpStatus.CREATED);
     }
 
     @PutMapping("/v1/tasks/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestParam Map<String,String> params) {
-        System.out.println("updateTask");
-        System.out.println(params.toString());
-        if(id > 0){
-            try{
-                Optional<Task> task = taskService.findById(id);
-                task.get().setStatus(Task.Status.valueOf(params.get("statusId")));
-                task.get().setAssignee(userService.findById(Long.parseLong(params.get("assigneeId"))).get());
-                task.get().setDescription(params.get("description"));
-                task.get().setName(params.get("title"));
-                taskService.update(task.get());
-                return new ResponseEntity<String>("Successfully updated", HttpStatus.OK);
-            } catch (Exception e){
-                return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> update(@RequestBody @Valid TaskDto taskDto,
+                                    BindingResult bindingResult,
+                                    HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            for (ObjectError o : bindingResult.getAllErrors()) {
+                errorMessage.append(o.getDefaultMessage()).append(";\n");
             }
+            return new ResponseEntity<>(new ValidationErrorDto(errorMessage.toString()), HttpStatus.BAD_REQUEST);
+            //return new ResponseEntity<>(errorMessage.toString(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>("Fail", HttpStatus.BAD_REQUEST);
-    }
 
+        return new ResponseEntity<>(taskService.update(taskDto), HttpStatus.OK);
+    }
 }
 

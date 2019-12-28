@@ -14,21 +14,21 @@
         </g:HorizontalPanel>
         <g:HorizontalPanel>
             <g:Label text="Title:" width="100px"/>
-            <g:TextBox name="nameFilter" ui:field="titleText"/>
+            <g:TextBox ui:field="titleText"/>
         </g:HorizontalPanel>
         <g:HorizontalPanel>
             <g:Label text="Description:" width="100px"/>
-            <g:TextBox name="description" ui:field="descriptionText"/>
+            <g:TextBox ui:field="descriptionText"/>
         </g:HorizontalPanel>
         <g:HorizontalPanel>
-            <g:ListBox name="status" ui:field="statusListBox">
+            <g:ListBox ui:field="statusListBox">
                 <g:item value="OPEN">Open</g:item>
                 <g:item value="INPROGRESS">In Progress</g:item>
                 <g:item value="COMPLETED">Completed</g:item>
             </g:ListBox>
         </g:HorizontalPanel>
         <g:HorizontalPanel>
-            <g:ListBox name="assignee" ui:field="assigneeListBox">
+            <g:ListBox ui:field="assigneeListBox">
                 <g:item value="-1L"></g:item>
             </g:ListBox>
         </g:HorizontalPanel>

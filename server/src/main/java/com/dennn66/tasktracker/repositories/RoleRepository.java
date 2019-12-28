@@ -1,4 +1,4 @@
-package com.dennn66.tasktracker.repositories.specifications;
+package com.dennn66.tasktracker.repositories;
 
 
 import com.dennn66.tasktracker.entities.Role;

@@ -1,11 +1,13 @@
 package com.dennn66.tasktracker.services;
 
+import com.dennn66.gwt.common.TaskCreateDto;
 import com.dennn66.gwt.common.TaskDto;
 import com.dennn66.tasktracker.entities.Task;
+import com.dennn66.tasktracker.entities.User;
+import com.dennn66.tasktracker.mappers.TaskMapper;
 import com.dennn66.tasktracker.repositories.TaskRepository;
 import com.dennn66.tasktracker.repositories.specifications.TaskSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,11 +26,36 @@ public class TaskService {
     public void setTaskRepository(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
-    public Iterable<Task> getAllTasks() {
-        return taskRepository.findAll();
+
+    public TaskDto update(TaskDto taskDto) {
+        Task task = TaskMapper.MAPPER.toTask(taskDto);
+        task.setStatus(Task.Status.valueOf(taskDto.getStatusId()));
+        task.setCreator(taskRepository.findById(taskDto.getId()).get().getCreator());
+        taskRepository.save(task);
+        return TaskMapper.MAPPER.fromTask(task);
+    }
+    public Optional<Task> findById(Long id) {return taskRepository.findById(id);}
+    public void remove(Long id) {
+        taskRepository.deleteById(id);
     }
 
-    public Page<Task> getAllTasks(Map<String,String> params) {
+    public boolean existsById(Long id) {
+        return taskRepository.existsById(id);
+    }
+    public TaskDto findOne(Long id) {
+        return taskRepository.findById(id).map(TaskMapper.MAPPER::fromTask).get();
+    }
+
+    public TaskDto save(TaskCreateDto taskCreateDto, User creator) {
+        Task task = TaskMapper.MAPPER.toTask(taskCreateDto);
+        task.setStatus(Task.Status.OPEN);
+        task.setCreator(creator);
+        if(task.getAssignee().getId() < 0) task.setAssignee(null);
+        task = taskRepository.save(task);
+        return TaskMapper.MAPPER.fromTask(task);
+    }
+
+    public List<TaskDto> getAllTasks(Map<String,String> params) {
         int tasksPerPage = 50;
 
         Long pageNumber;
@@ -54,6 +81,7 @@ public class TaskService {
                 !creatorFilter.equals("null") &&
                 !creatorFilter.equals("")) {
             spec = spec.and(TaskSpecifications.creatorContains(creatorFilter));
+
         }
         if (nameFilter != null  &&
                 !nameFilter.equals("null")  &&
@@ -66,20 +94,6 @@ public class TaskService {
                 !statusFilter.equals("")) {
             spec = spec.and(TaskSpecifications.statusEqual(Task.Status.valueOf(statusFilter)));
         }
-        return taskRepository.findAll(spec, pageable);
+        return TaskMapper.MAPPER.fromTaskList(taskRepository.findAll(spec, pageable).toList());
     }
-
-    public void insert(Task task) {
-        task.setStatus(Task.Status.OPEN);
-        taskRepository.save(task);
-    }
-    public void delete(Task task) {
-        taskRepository.delete(task);
-    }
-    public void update(Task task) {taskRepository.save(task);}
-    public Optional<Task> findById(Long id) {return taskRepository.findById(id);}
-    public void remove(Long id) {
-        taskRepository.deleteById(id);
-    }
-
 }

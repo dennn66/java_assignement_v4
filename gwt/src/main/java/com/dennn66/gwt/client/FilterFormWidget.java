@@ -14,8 +14,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 public class FilterFormWidget extends Composite {
 
     private TasksClient client;
-    @UiField
-    FormPanel form;
+
 
     @UiField
     TextBox creatorText;
@@ -36,28 +35,9 @@ public class FilterFormWidget extends Composite {
 
     public FilterFormWidget(TasksTableWidget tasksTableWidget) {
         this.initWidget(uiBinder.createAndBindUi(this));
-//        this.form.setAction(Defaults.getServiceRoot().concat("v1/tasks"));
-//        this.form.setMethod("PUT");
         this.tasksTableWidget = tasksTableWidget;
         client = GWT.create(TasksClient.class);
     }
-
-//    @UiHandler("form")
-//    public void onSubmit(FormPanel.SubmitEvent event) {
-////        if (creatorText.getText().length() == 0) {
-////            Window.alert("Необходимо заполнить поле ID");
-////            event.cancel();
-////        }
-////        if (titleText.getText().length() < 4) {
-////            Window.alert("Название товара должно быть не менее 4 символов");
-////            event.cancel();
-////        }
-//    }
-
-//    @UiHandler("form")
-//    public void onSubmitComplete(FormPanel.SubmitCompleteEvent event) {
-//        tasksTableWidget.refresh();
-//    }
 
     @UiHandler("btnSubmit")
     public void submitClick(ClickEvent event) {

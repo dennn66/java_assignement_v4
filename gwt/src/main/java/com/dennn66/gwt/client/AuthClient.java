@@ -14,8 +14,4 @@ public interface AuthClient extends RestService {
     @POST
     @Path("http://localhost:8189/gwt-rest/authenticate")
     void authenticate(@BeanParam() JwtAuthRequestDto authRequest, MethodCallback<JwtAuthResponseDto> result);
-
-//    @POST
-//    @Path("http://localhost:8189/market/authenticateTheUser")
-//    void authenticate(@FormParam("username") String username, @FormParam("password") String password, MethodCallback<String> result);
 }

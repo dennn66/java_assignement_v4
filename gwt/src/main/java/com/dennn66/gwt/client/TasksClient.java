@@ -1,6 +1,7 @@
 package com.dennn66.gwt.client;
 
 
+import com.dennn66.gwt.common.TaskCreateDto;
 import com.dennn66.gwt.common.TaskDto;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
@@ -25,16 +26,10 @@ public interface TasksClient extends RestService {
     @PUT
     @Path("/{id}")
     void updateTask(@HeaderParam("Authorization") String token,
-                    @PathParam("id") String id,
-                    @QueryParam("assigneeId") String assigneeId,
-                    @QueryParam("title") String title,
-                    @QueryParam("description") String description,
-                    @QueryParam("statusId") String statusId,
+                    @BeanParam TaskDto TaskDto,
                     MethodCallback<Void> result);
     @POST
     void addTask(@HeaderParam("Authorization") String token,
-                    @QueryParam("assigneeId") String assigneeId,
-                    @QueryParam("title") String title,
-                    @QueryParam("description") String description,
-                    MethodCallback<Void> result);
+                 @BeanParam TaskCreateDto taskCreateDto,
+                 MethodCallback<Void> result);
 }
