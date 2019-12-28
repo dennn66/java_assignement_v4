@@ -39,22 +39,7 @@ public class TaskController {
             Model model,
             @RequestParam Map<String,String> params
     ) {
-        int tasksPerPage = 5;
-
-        Long pageNumber;
-        try{
-            pageNumber = Long.parseLong(params.get("pageNumber"));
-        } catch (NumberFormatException e){
-            pageNumber = 1L;
-        }
-        if (pageNumber < 1L) {
-            pageNumber = 1L;
-        }
-        Page<Task> tasksPage = taskService.getAllTasks(params, PageRequest.of(
-                pageNumber.intValue() - 1,
-                tasksPerPage,
-                Sort.Direction.ASC,
-                "id"));
+        Page<Task> tasksPage = taskService.getAllTasks(params);
         model.addAttribute("tasksPage", tasksPage);
 
         Iterator<Map.Entry<String, String>> entries = params.entrySet().iterator();

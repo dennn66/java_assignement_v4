@@ -139,7 +139,7 @@ public class TasksTableWidget extends Composite {
             // XMLHttpRequest.java:343 Refused to set unsafe header "Access-Control-Request-Headers"
 
 
-            client.getAllTasks(token, "Access-Control-Allow-Origin \"*\"",creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
+            client.getAllTasks(token, creatorFilter, nameFilter, statusFilter, new MethodCallback<List<TaskDto>>() {
                 @Override
                 public void onFailure(Method method, Throwable throwable) {
                     GWT.log(throwable.toString());

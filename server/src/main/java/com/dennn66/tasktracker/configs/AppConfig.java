@@ -17,7 +17,7 @@ public class AppConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         //registry.addMapping("/**");  // работает получение токена, getAll не работает
         //registry.addMapping("/**").allowedOrigins("http://localhost"); // работает получение токена, getAll не работает
-        registry.addMapping("/**").allowedOrigins("http://localhost:8888"); // работает получение токена, getAll не работает
+        registry.addMapping("/**").allowedOrigins("http://localhost:8888").allowedMethods("POST", "DELETE", "PUT", "GET"); // работает получение токена, getAll не работает
     }
     @Bean
     public ModelMapper modelMapper() {
